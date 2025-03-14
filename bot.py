@@ -20,7 +20,7 @@ CHANNELS = {
 class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
-        get_latest_videos(CHANNELS["Knight"])
+        get_latest_videos(CHANNELS["Vro"])
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -28,11 +28,6 @@ intents.message_content = True
 def is_short(video_id):
     url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={YOUTUBE_API_KEY}"
     res = requests.get(url).json()
-
-    print("CHECKING IF SHORT")
-    print(res["items"][0]["contentDetails"]["duration"])
-    print("M" not in res["items"][0]["contentDetails"]["duration"])
-
     return "M" not in res["items"][0]["contentDetails"]["duration"]
 
 
@@ -51,7 +46,6 @@ def get_latest_videos(channel_id):
 
     playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&publishedAfter={today}&key={YOUTUBE_API_KEY}"
     res = requests.get(playlist_url).json()
-    print(res)
 
     for item in res["items"]:
         video_upload_date = item["snippet"]["publishedAt"][0:10]
@@ -68,11 +62,14 @@ def get_latest_videos(channel_id):
 
 
     message = f'''
-    • Longform {longform_upload_status}
-    • Short {short_upload_status}
+    - Longform {longform_upload_status}
+    - Short {short_upload_status}
     '''
 
     print(message)
+
+def check_uploads():
+    pass
 
 
 
