@@ -25,7 +25,18 @@ class Client(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 
+def is_short(video_id):
+    url = f"https://www.youtube.com/shorts/{video_id}"
+    res = requests.get(url)
+    status_code = res.status_code
+    print(status_code)
+
 def get_latest_videos(channel_id):
+
+    longform_upload_status = "❌"
+    short_upload_status = "❌"
+
+    success = "✅"
 
     today = date.today()
     print(f"Today: {today}")
@@ -45,6 +56,14 @@ def get_latest_videos(channel_id):
 
         if today == video_upload_date:
             print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
+            is_short(video_id)
+
+    message = f'''
+    • Longform {longform_upload_status}
+    • Short {short_upload_status}
+    '''
+
+    print(message)
 
 
 
