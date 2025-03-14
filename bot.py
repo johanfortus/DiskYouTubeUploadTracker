@@ -32,7 +32,7 @@ def is_short(video_id):
     print("CHECKING IF SHORT")
     print(res["items"][0]["contentDetails"]["duration"])
     print("M" not in res["items"][0]["contentDetails"]["duration"])
-    
+
     return "M" not in res["items"][0]["contentDetails"]["duration"]
 
 
