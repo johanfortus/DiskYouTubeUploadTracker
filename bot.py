@@ -34,7 +34,7 @@ def get_latest_videos(channel_id):
 
     today = date.today()
 
-    channel_url = f'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}'
+    channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}"
     res = requests.get(channel_url).json()
     uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
@@ -64,7 +64,13 @@ async def check_uploads():
     for i in CHANNELS:
         # print(i)
         channel_id = CHANNELS[i]
-        message += f"**[{i}](https://www.youtube.com/{channel_id})**\n"
+
+        channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={channel_id}&key={YOUTUBE_API_KEY}"
+        res = requests.get(channel_url).json()
+        subscriber_count = res["items"][0]["statistics"]["subscriberCount"]
+        print(f"Subscribers: {subscriber_count}")
+
+        message += f"**[{i}](https://www.youtube.com/{channel_id})** - {subscriber_count} subscribers \n"
         message+=get_latest_videos(channel_id)+"\n\n"
 
     print(message)
