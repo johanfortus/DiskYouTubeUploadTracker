@@ -11,16 +11,7 @@ from discord.ext import tasks
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
-DISCORD_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID")
-
-print("Environment variables loaded:")
-for key, value in os.environ.items():
-    print(f"{key}: {value}")
-DISCORD_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID")
-if not DISCORD_CHANNEL_ID:
-    raise ValueError("DISCORD_CHANNEL_ID is still not set")
-print(f"Loaded DISCORD_CHANNEL_ID: {DISCORD_CHANNEL_ID}")
-DISCORD_CHANNEL_ID = int(DISCORD_CHANNEL_ID)
+DISCORD_CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID"))
 
 CHANNELS = {
     "Vro" : os.getenv("CHANNEL_ID_ONE"),
@@ -58,8 +49,9 @@ def get_latest_videos(channel_id):
         video_title = item["snippet"]["title"]
         video_id = item["snippet"]["resourceId"]["videoId"]
 
-        if today == video_upload_date:
-            # print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
+        if str(today) == str(video_upload_date):
+            print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
+            LAST_UPLOADS.append(video_id)
             if is_short(video_id):
                 short_upload_status = "✅"
             else:
@@ -86,7 +78,7 @@ async def check_uploads():
 
     print(message)
     channel = client.get_channel(DISCORD_CHANNEL_ID)
-    await channel.send(message)
+    # await channel.send(message)
 
 @tasks.loop(minutes=5)
 async def track_uploads():
@@ -99,12 +91,13 @@ async def track_uploads():
         res = requests.get(channel_url).json()
         uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
-        playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&publishedAfter={today}&key={YOUTUBE_API_KEY}"
+        playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&key={YOUTUBE_API_KEY}"
         res = requests.get(playlist_url).json()
 
         for item in res["items"]:
+            video_upload_date = item["snippet"]["publishedAt"][0:10]
             video_id = item["snippet"]["resourceId"]["videoId"]
-            if video_id not in LAST_UPLOADS:
+            if video_id not in LAST_UPLOADS and str(video_upload_date) == str(today):
                 LAST_UPLOADS.append(video_id)
                 new_upload = True
 
