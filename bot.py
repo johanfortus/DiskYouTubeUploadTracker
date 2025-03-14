@@ -54,10 +54,7 @@ def get_latest_videos(channel_id):
             else:
                 longform_upload_status = "✅"
 
-    message = f'''
-    - Longform {longform_upload_status}
-    - Short {short_upload_status}
-    '''
+    message = f"- Longform {longform_upload_status} \n - Short {short_upload_status}"
 
     return message
 
