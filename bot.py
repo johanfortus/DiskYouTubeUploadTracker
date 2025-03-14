@@ -38,9 +38,10 @@ def get_latest_videos(channel_id):
     res = requests.get(playlist_url).json()
 
     for item in res["items"]:
+        video_upload_date = item["snippet"]["publishedAt"]
         video_title = item["snippet"]["title"]
         video_id = item["snippet"]["resourceId"]["videoId"]
-        print(f"Title: {video_title}, ID: {video_id}")
+        print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
 
 
 
