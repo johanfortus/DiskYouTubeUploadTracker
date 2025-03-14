@@ -20,7 +20,7 @@ CHANNELS = {
 class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
-        get_latest_videos(CHANNELS["Vro"])
+        get_latest_videos(CHANNELS["Knight"])
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -41,7 +41,7 @@ def get_latest_videos(channel_id):
         video_upload_date = item["snippet"]["publishedAt"]
         video_title = item["snippet"]["title"]
         video_id = item["snippet"]["resourceId"]["videoId"]
-        print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
+        print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date[0:10]}")
 
 
 
