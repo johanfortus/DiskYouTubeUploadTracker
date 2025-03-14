@@ -20,7 +20,8 @@ CHANNELS = {
 class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
-        get_latest_videos(CHANNELS["Vro"])
+        check_uploads()
+        # get_latest_videos(CHANNELS["Knight"])
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -37,7 +38,6 @@ def get_latest_videos(channel_id):
     short_upload_status = "❌"
 
     today = date.today()
-    print(f"Today: {today}")
     today = "2025-03-13"
 
     channel_url = f'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}'
@@ -59,8 +59,6 @@ def get_latest_videos(channel_id):
             else:
                 longform_upload_status = "✅"
 
-
-
     message = f'''
     - Longform {longform_upload_status}
     - Short {short_upload_status}
@@ -69,7 +67,10 @@ def get_latest_videos(channel_id):
     print(message)
 
 def check_uploads():
-    pass
+    for i in CHANNELS:
+        print(i)
+        channel_id = CHANNELS[i]
+        get_latest_videos(channel_id)
 
 
 
