@@ -2,7 +2,7 @@ import discord
 import requests
 import json
 import os
-import datetime
+from datetime import date
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
@@ -26,9 +26,24 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 def get_latest_videos(channel_id):
-    url = f"https://www.googleapis.com/youtube/v3/search?key={YOUTUBE_API_KEY}&channelId={channel_id}&order=date&maxResults=3&part=snippet"
-    res = requests.get(url).json()
-    print(res)
+
+    today = date.today()
+    print(f"Today: {today}")
+
+    channel_url = f'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}'
+    res = requests.get(channel_url).json()
+    uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+
+    playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&maxResults=50&key={YOUTUBE_API_KEY}"
+    res = requests.get(playlist_url).json()
+
+    for item in res["items"]:
+        video_title = item["snippet"]["title"]
+        video_id = item["snippet"]["resourceId"]["videoId"]
+        print(f"Title: {video_title}, ID: {video_id}")
+
+
+
 
 
 
