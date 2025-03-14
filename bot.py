@@ -17,14 +17,9 @@ CHANNELS = {
     "Splash" : os.getenv("CHANNEL_ID_THREE")
 }
 
-class Client(discord.Client):
-    async def on_ready(self):
-        print(f"Logged on as {self.user}")
-        check_uploads()
-        # get_latest_videos(CHANNELS["Knight"])
-
 intents = discord.Intents.default()
 intents.message_content = True
+client = discord.Client(intents=intents)
 
 def is_short(video_id):
     url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={YOUTUBE_API_KEY}"
@@ -66,7 +61,8 @@ def get_latest_videos(channel_id):
 
     return message
 
-def check_uploads():
+
+async def check_uploads():
     message = ""
     for i in CHANNELS:
         message+=f"**{i}**"
@@ -75,10 +71,13 @@ def check_uploads():
         message+=get_latest_videos(channel_id)+"\n"
 
     print(message)
+    channel = client.get_channel(DISCORD_CHANNEL_ID)
+    await channel.send(message)
 
+@client.event
+async def on_ready():
+    print(f"Logged on as {client.user}")
+    await check_uploads()
+    # get_latest_videos(CHANNELS["Knight"])
 
-
-
-
-client = Client(intents=intents)
 client.run(DISCORD_TOKEN)
