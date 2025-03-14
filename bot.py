@@ -32,14 +32,14 @@ def is_short(video_id):
     print("CHECKING IF SHORT")
     print(res["items"][0]["contentDetails"]["duration"])
     print("M" not in res["items"][0]["contentDetails"]["duration"])
+    
+    return "M" not in res["items"][0]["contentDetails"]["duration"]
 
 
 def get_latest_videos(channel_id):
 
     longform_upload_status = "❌"
     short_upload_status = "❌"
-
-    success = "✅"
 
     today = date.today()
     print(f"Today: {today}")
@@ -52,6 +52,7 @@ def get_latest_videos(channel_id):
     playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&publishedAfter={today}&key={YOUTUBE_API_KEY}"
     res = requests.get(playlist_url).json()
     print(res)
+
     for item in res["items"]:
         video_upload_date = item["snippet"]["publishedAt"][0:10]
         video_title = item["snippet"]["title"]
@@ -59,7 +60,12 @@ def get_latest_videos(channel_id):
 
         if today == video_upload_date:
             print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
-            is_short(video_id)
+            if is_short(video_id):
+                short_upload_status = "✅"
+            else:
+                longform_upload_status = "✅"
+
+
 
     message = f'''
     • Longform {longform_upload_status}
