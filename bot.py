@@ -5,6 +5,8 @@ import os
 from datetime import date
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
+import asyncio
+from discord.ext import tasks
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
@@ -17,6 +19,8 @@ CHANNELS = {
     "Splash" : os.getenv("CHANNEL_ID_THREE")
 }
 
+LAST_UPLOADS = {}
+
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
@@ -25,7 +29,6 @@ def is_short(video_id):
     url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={YOUTUBE_API_KEY}"
     res = requests.get(url).json()
     return "M" not in res["items"][0]["contentDetails"]["duration"]
-
 
 def get_latest_videos(channel_id):
 
@@ -54,7 +57,6 @@ def get_latest_videos(channel_id):
                 longform_upload_status = "✅"
 
     message = f"- Longform {longform_upload_status} \n - Short {short_upload_status}"
-
     return message
 
 
@@ -62,7 +64,7 @@ async def check_uploads():
     today = date.today()
     message = f"**TMNT FREEBUILD** \n Date: {today} \n \n"
     for i in CHANNELS:
-        # print(i)
+
         channel_id = CHANNELS[i]
 
         channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={channel_id}&key={YOUTUBE_API_KEY}"
@@ -77,10 +79,30 @@ async def check_uploads():
     channel = client.get_channel(DISCORD_CHANNEL_ID)
     await channel.send(message)
 
+@tasks.loop(minutes=5)
+async def track_uploads():
+    today = date.today()
+    new_upload = False
+
+    for i in CHANNELS:
+        channel_id = CHANNELS[i]
+        video = get_latest_videos(channel_id)
+
+        if video is None:
+            continue
+
+        if channel_id not in LAST_UPLOADS or LAST_UPLOADS[channel_id] != video["id"]:
+            LAST_UPLOADS[channel_id] = video["id"]
+            new_upload = True
+
+    if new_upload:
+        await check_uploads()
+
+
 @client.event
 async def on_ready():
     print(f"Logged on as {client.user}")
     await check_uploads()
-    # get_latest_videos(CHANNELS["Knight"])
+    track_uploads.start()
 
 client.run(DISCORD_TOKEN)
