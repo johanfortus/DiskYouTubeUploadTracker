@@ -29,6 +29,7 @@ def get_latest_videos(channel_id):
 
     today = date.today()
     print(f"Today: {today}")
+    today = "2025-03-13"
 
     channel_url = f'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}'
     res = requests.get(channel_url).json()
@@ -38,10 +39,12 @@ def get_latest_videos(channel_id):
     res = requests.get(playlist_url).json()
 
     for item in res["items"]:
-        video_upload_date = item["snippet"]["publishedAt"]
+        video_upload_date = item["snippet"]["publishedAt"][0:10]
         video_title = item["snippet"]["title"]
         video_id = item["snippet"]["resourceId"]["videoId"]
-        print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date[0:10]}")
+
+        if today == video_upload_date:
+            print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
 
 
 
