@@ -53,7 +53,7 @@ def get_latest_videos(channel_id):
         video_id = item["snippet"]["resourceId"]["videoId"]
 
         if today == video_upload_date:
-            print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
+            # print(f"Title: {video_title}, ID: {video_id}, Upload Date: {video_upload_date}")
             if is_short(video_id):
                 short_upload_status = "✅"
             else:
@@ -64,14 +64,17 @@ def get_latest_videos(channel_id):
     - Short {short_upload_status}
     '''
 
-    print(message)
+    return message
 
 def check_uploads():
+    message = ""
     for i in CHANNELS:
-        print(i)
+        message+=f"**{i}**"
+        # print(i)
         channel_id = CHANNELS[i]
-        get_latest_videos(channel_id)
+        message+=get_latest_videos(channel_id)+"\n"
 
+    print(message)
 
 
 
