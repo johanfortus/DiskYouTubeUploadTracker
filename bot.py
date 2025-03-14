@@ -33,7 +33,6 @@ def get_latest_videos(channel_id):
     short_upload_status = "❌"
 
     today = date.today()
-    today = "2025-03-13"
 
     channel_url = f'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}'
     res = requests.get(channel_url).json()
@@ -60,12 +59,13 @@ def get_latest_videos(channel_id):
 
 
 async def check_uploads():
-    message = ""
+    today = date.today()
+    message = f"**TMNT FREEBUILD** \n Date: {today} \n \n"
     for i in CHANNELS:
-        message+=f"**{i}**"
         # print(i)
         channel_id = CHANNELS[i]
-        message+=get_latest_videos(channel_id)+"\n"
+        message += f"**[{i}](https://www.youtube.com/{channel_id})**\n"
+        message+=get_latest_videos(channel_id)+"\n\n"
 
     print(message)
     channel = client.get_channel(DISCORD_CHANNEL_ID)
