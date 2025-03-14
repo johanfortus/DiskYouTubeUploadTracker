@@ -35,7 +35,7 @@ def get_latest_videos(channel_id):
     res = requests.get(channel_url).json()
     uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
-    playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&maxResults=50&key={YOUTUBE_API_KEY}"
+    playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&publishedAfter={today}&key={YOUTUBE_API_KEY}"
     res = requests.get(playlist_url).json()
 
     for item in res["items"]:
