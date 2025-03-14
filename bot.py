@@ -28,7 +28,7 @@ CHANNELS = {
     "Splash" : os.getenv("CHANNEL_ID_THREE")
 }
 
-LAST_UPLOADS = {}
+LAST_UPLOADS = []
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -95,14 +95,18 @@ async def track_uploads():
 
     for i in CHANNELS:
         channel_id = CHANNELS[i]
-        video = get_latest_videos(channel_id)
+        channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}"
+        res = requests.get(channel_url).json()
+        uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
-        if video is None:
-            continue
+        playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&publishedAfter={today}&key={YOUTUBE_API_KEY}"
+        res = requests.get(playlist_url).json()
 
-        if channel_id not in LAST_UPLOADS or LAST_UPLOADS[channel_id] != video["id"]:
-            LAST_UPLOADS[channel_id] = video["id"]
-            new_upload = True
+        for item in res["items"]:
+            video_id = item["snippet"]["resourceId"]["videoId"]
+            if video_id not in LAST_UPLOADS:
+                LAST_UPLOADS.append(video_id)
+                new_upload = True
 
     if new_upload:
         await check_uploads()
