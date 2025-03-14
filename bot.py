@@ -11,7 +11,12 @@ from discord.ext import tasks
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
-DISCORD_CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID"))
+DISCORD_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID")
+
+print(f"Loaded DISCORD_CHANNEL_ID: {DISCORD_CHANNEL_ID}")
+if DISCORD_CHANNEL_ID is None:
+    raise ValueError("DISCORD_CHANNEL_ID is not set in environment variables")
+DISCORD_CHANNEL_ID = int(DISCORD_CHANNEL_ID)
 
 CHANNELS = {
     "Vro" : os.getenv("CHANNEL_ID_ONE"),
