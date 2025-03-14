@@ -20,9 +20,17 @@ CHANNELS = {
 class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
+        get_latest_videos(CHANNELS["Vro"])
 
 intents = discord.Intents.default()
 intents.message_content = True
+
+def get_latest_videos(channel_id):
+    url = f"https://www.googleapis.com/youtube/v3/search?key={YOUTUBE_API_KEY}&channelId={channel_id}&order=date&maxResults=3&part=snippet"
+    res = requests.get(url).json()
+    print(res)
+
+
 
 client = Client(intents=intents)
 client.run(DISCORD_TOKEN)
