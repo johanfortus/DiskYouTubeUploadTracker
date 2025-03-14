@@ -70,7 +70,7 @@ async def check_uploads():
         subscriber_count = res["items"][0]["statistics"]["subscriberCount"]
         print(f"Subscribers: {subscriber_count}")
 
-        message += f"**[{i}](https://www.youtube.com/{channel_id})** - {subscriber_count} subscribers \n"
+        message += f"**[{i}](https://www.youtube.com/channel/{channel_id})** {subscriber_count} subscribers \n"
         message+=get_latest_videos(channel_id)+"\n\n"
 
     print(message)
