@@ -78,7 +78,7 @@ async def check_uploads():
 
     print(message)
     channel = client.get_channel(DISCORD_CHANNEL_ID)
-    # await channel.send(message)
+    await channel.send(message)
 
 @tasks.loop(minutes=5)
 async def track_uploads():
