@@ -18,9 +18,13 @@ class UploadChecker:
         url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={self.YOUTUBE_API_KEY}"
         res = requests.get(url).json()
         print(f"Video ID: {video_id}")
+
         duration = res["items"][0]["contentDetails"]["duration"]
-        time = isodate.parse_duration(duration)
-        print(f"Time: {time}")
+
+        parsed_duration = isodate.parse_duration(duration)
+        print(f"Time: {str(parsed_duration)}")
+        print(str(parsed_duration).split(":"))
+
         return "M" not in res["items"][0]["contentDetails"]["duration"]
 
     def get_latest_videos(self, channel_id):
