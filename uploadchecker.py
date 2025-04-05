@@ -1,4 +1,5 @@
 import requests
+import isodate
 from constants import DISCORD_TOKEN, YOUTUBE_API_KEY, DISCORD_CHANNEL_ID, CHANNELS
 
 
@@ -17,6 +18,9 @@ class UploadChecker:
         url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={self.YOUTUBE_API_KEY}"
         res = requests.get(url).json()
         print(f"Video ID: {video_id}")
+        duration = res["items"][0]["contentDetails"]["duration"]
+        time = isodate.parse_duration(duration)
+        print(f"Time: {time}")
         return "M" not in res["items"][0]["contentDetails"]["duration"]
 
     def get_latest_videos(self, channel_id):
