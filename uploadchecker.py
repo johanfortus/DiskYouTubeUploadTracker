@@ -6,14 +6,17 @@ from constants import DISCORD_TOKEN, YOUTUBE_API_KEY, DISCORD_CHANNEL_ID, CHANNE
 
 class UploadChecker:
 
-    def __init__(self, YOUTUBE_API_KEY, CHANNELS):
+    def __init__(self, YOUTUBE_API_KEY, CHANNEL_ID):
 
         self.YOUTUBE_API_KEY = YOUTUBE_API_KEY
-
-        self.CHANNELS = CHANNELS
-
+        self.CHANNEL_ID = CHANNEL_ID
         self.LAST_UPLOADS = []
 
+        self.video_formats = {
+            "livestream" : False,
+            "longform" : False,
+            "short" : False
+        }
 
     def video_type(self, video_id):
         url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={self.YOUTUBE_API_KEY}"
@@ -31,14 +34,9 @@ class UploadChecker:
         elif int(sec) > 0:
             return "short"
 
-    def get_latest_videos(self, channel_id):
-        longform_upload_status = "❌"
-        short_upload_status = "❌"
+    def get_latest_videos(self):
 
-        current_date = str(date.today())
-        print(f"Today: {current_date}")
-
-        channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}"
+        channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={self.CHANNEL_ID}&key={YOUTUBE_API_KEY}"
         res = requests.get(channel_url).json()
 
         uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
@@ -46,6 +44,14 @@ class UploadChecker:
         res = requests.get(playlist_url).json()
 
         videos = res["items"]
+        return videos
+
+
+    def check_uploads(self):
+
+        new_upload = False
+        current_date = str(date.today())
+        videos = self.get_latest_videos()
 
         for video in videos:
 
@@ -53,16 +59,25 @@ class UploadChecker:
             video_title = video["snippet"]["title"]
             video_upload_date = str(video["snippet"]["publishedAt"][0:10])
 
-            # print(f"Video Title: {video_title}")
-
             if current_date == video_upload_date:
+
+                if video_id not in self.LAST_UPLOADS:
+                    self.LAST_UPLOADS.append(video_id)
+                    new_upload = True
+
                 print(f"Title: {video_title} \nID: {video_id} \nUpload Date: {video_upload_date} \n")
 
+                match self.video_type(video_id):
+                    case "livestream":
+                        self.video_formats["livestream"] = True
+                    case "longform":
+                        self.video_formats["longform"] = True
+                    case "short":
+                        self.video_formats["short"] = True
+
+        return new_upload
 
 
-    def check_uploads(self):
-        pass
 
 
-
-UploadChecker = UploadChecker(YOUTUBE_API_KEY, CHANNELS)
+print(UploadChecker.check_uploads())

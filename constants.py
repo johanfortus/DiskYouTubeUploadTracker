@@ -11,3 +11,4 @@ CHANNELS = {
     "Knight": os.getenv("CHANNEL_ID_TWO"),
     "Splash": os.getenv("CHANNEL_ID_THREE")
 }
+
