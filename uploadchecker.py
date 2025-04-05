@@ -1,7 +1,7 @@
 import requests
 import isodate
 from datetime import date
-from constants import DISCORD_TOKEN, YOUTUBE_API_KEY, DISCORD_CHANNEL_ID, CHANNELS
+from constants import YOUTUBE_API_KEY
 
 
 class UploadChecker:
@@ -11,6 +11,7 @@ class UploadChecker:
         self.YOUTUBE_API_KEY = YOUTUBE_API_KEY
         self.CHANNEL_ID = CHANNEL_ID
         self.LAST_UPLOADS = []
+        self.current_date = str(date.today())
 
         self.video_formats = {
             "livestream" : False,
@@ -29,7 +30,7 @@ class UploadChecker:
 
         if int(hours) > 0:
             return "livestream"
-        elif int(min) > 0:
+        elif int(hours) == 0 and int(min) > 0:
             return "longform"
         elif int(sec) > 0:
             return "short"
@@ -50,7 +51,6 @@ class UploadChecker:
     def check_uploads(self):
 
         new_upload = False
-        current_date = str(date.today())
         videos = self.get_latest_videos()
 
         for video in videos:
@@ -59,7 +59,7 @@ class UploadChecker:
             video_title = video["snippet"]["title"]
             video_upload_date = str(video["snippet"]["publishedAt"][0:10])
 
-            if current_date == video_upload_date:
+            if self.current_date == video_upload_date:
 
                 if video_id not in self.LAST_UPLOADS:
                     self.LAST_UPLOADS.append(video_id)
@@ -77,7 +77,31 @@ class UploadChecker:
 
         return new_upload
 
+    # Runs every 5 minutes - Checks if there's a new video or if it's a new day
+    def tracker(self):
+        print(f"Current Date: {self.current_date}")
+        print(f"Today: {str(date.today())}")
+        if self.current_date != str(date.today()):
+            self.reset()
+
+        if self.check_uploads() == True:
+            return True
+
+
+    # Clears LAST_UPLOADS, resets everything in video_formats to False, updates current_day
+    def reset(self):
+        self.LAST_UPLOADS = []
+
+        for i in self.video_formats:
+            self.video_formats[i] = False
+
+        self.current_date = str(date.today())
+
+
+
+
 
 
 
 print(UploadChecker.check_uploads())
+print(UploadChecker.reset())
