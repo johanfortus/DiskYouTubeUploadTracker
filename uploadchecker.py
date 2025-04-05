@@ -17,13 +17,21 @@ class UploadChecker:
     def is_short(self, video_id):
         url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&part=contentDetails&key={self.YOUTUBE_API_KEY}"
         res = requests.get(url).json()
-        print(f"Video ID: {video_id}")
 
         duration = res["items"][0]["contentDetails"]["duration"]
+        parsed_duration = str(isodate.parse_duration(duration)).split(":")
 
-        parsed_duration = isodate.parse_duration(duration)
-        print(f"Time: {str(parsed_duration)}")
-        print(str(parsed_duration).split(":"))
+        hours = parsed_duration[0]
+        minutes = parsed_duration[1]
+        seconds = parsed_duration[2]
+
+        print(f"Hours: {hours}")
+        print(f"Minutes: {minutes}")
+        print(f"Seconds: {seconds}")
+
+        print(f"Parsed Duration: {parsed_duration}")
+
+
 
         return "M" not in res["items"][0]["contentDetails"]["duration"]
 
