@@ -1,15 +1,15 @@
 import requests
 import isodate
 from datetime import date
-from constants import YOUTUBE_API_KEY
 
 
 class UploadChecker:
 
-    def __init__(self, YOUTUBE_API_KEY, CHANNEL_ID):
+    def __init__(self, YOUTUBE_API_KEY, CHANNEL_ID, CHANNEL_NAME):
 
         self.YOUTUBE_API_KEY = YOUTUBE_API_KEY
         self.CHANNEL_ID = CHANNEL_ID
+        self.CHANNEL_NAME = CHANNEL_NAME
         self.LAST_UPLOADS = []
         self.current_date = str(date.today())
 
@@ -37,16 +37,15 @@ class UploadChecker:
 
     def get_latest_videos(self):
 
-        channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={self.CHANNEL_ID}&key={YOUTUBE_API_KEY}"
+        channel_url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={self.CHANNEL_ID}&key={self.YOUTUBE_API_KEY}"
         res = requests.get(channel_url).json()
 
         uploads_playlist_id = res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
-        playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&key={YOUTUBE_API_KEY}"
+        playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={uploads_playlist_id}&key={self.YOUTUBE_API_KEY}"
         res = requests.get(playlist_url).json()
 
         videos = res["items"]
         return videos
-
 
     def check_uploads(self):
 
@@ -83,10 +82,12 @@ class UploadChecker:
         print(f"Today: {str(date.today())}")
         if self.current_date != str(date.today()):
             self.reset()
+            return True
 
         if self.check_uploads() == True:
             return True
 
+        return False
 
     # Clears LAST_UPLOADS, resets everything in video_formats to False, updates current_day
     def reset(self):
@@ -97,11 +98,8 @@ class UploadChecker:
 
         self.current_date = str(date.today())
 
+    def get_uploaded_status(self):
+        return self.video_formats
 
-
-
-
-
-
-print(UploadChecker.check_uploads())
-print(UploadChecker.reset())
+    def get_channel_name(self):
+        return self.CHANNEL_NAME

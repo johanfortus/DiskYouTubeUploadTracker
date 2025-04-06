@@ -31,11 +31,11 @@ def track_uploads():
     if new_update:
 
         for upload_checker in upload_checkers:
-            if upload_checker.get_uploaded()['livestream']:
+            if upload_checker.get_uploaded_status()['livestream']:
                 livestream_upload_status = "✅"
-            if upload_checker.get_uploaded()['longform']:
+            if upload_checker.get_uploaded_status()['longform']:
                 longform_upload_status = "✅"
-            if upload_checker.get_uploaded()['short']:
+            if upload_checker.get_uploaded_status()['short']:
                 short_upload_status = "✅"
 
             print(f"Channel: {upload_checker.get_channel_name()}")

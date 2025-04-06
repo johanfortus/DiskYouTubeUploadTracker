@@ -9,6 +9,5 @@ DISCORD_CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID"))
 CHANNELS = {
     "Vro": os.getenv("CHANNEL_ID_ONE"),
     "Knight": os.getenv("CHANNEL_ID_TWO"),
-    "Splash": os.getenv("CHANNEL_ID_THREE")
+    "Splash": os.getenv("CHANNEL_ID_THREE"),
 }
-
