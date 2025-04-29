@@ -1,11 +1,8 @@
 import discord
 import requests
-import json
 import os
 from datetime import date
-from discord.ext import commands, tasks
 from dotenv import load_dotenv
-import asyncio
 from discord.ext import tasks
 
 load_dotenv()
